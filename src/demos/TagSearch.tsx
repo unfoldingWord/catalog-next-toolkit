@@ -12,7 +12,7 @@ type SearchProps = {
   includeHistory?: Boolean,
 }
 
-export const Search = ({ owner, language, resource, stage, includeHistory,
+export const TagSearch = ({ owner, language, resource, stage, includeHistory,
 } :SearchProps) => {
     const [value, setValue] = useState(<CircularProgress />);
     useEffect( () => {
@@ -51,4 +51,4 @@ export const Search = ({ owner, language, resource, stage, includeHistory,
     );
   };
   
-  export default Search;
+  export default TagSearch;
