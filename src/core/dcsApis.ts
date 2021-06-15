@@ -29,8 +29,11 @@ const Door43Api = setup({
 });
 
 
+interface ObjectLiteral {
+  [data: string]: any;
+} 
 
-export async function searchCatalogNext( owner :string, language :string, resource :string, stage :string, includeHistory :Boolean) :Promise<string> {
+export async function searchCatalogNext( owner :string, language :string, resource :string, stage :string, includeHistory :Boolean) :Promise<string|ObjectLiteral> {
   //https://qa.door43.org/api/catalog/v5/search/unfoldingword/en_twl?stage=prod&includeHistory=true  
   let uri = Path.join(APIVERSION,'search',owner,language+"_"+resource);
   uri += `?stage=${stage}&includeHistory=${includeHistory}`
@@ -41,8 +44,18 @@ export async function searchCatalogNext( owner :string, language :string, resour
     console.log("res=",res)
     data = res.data
   } catch (error) {
-    throw Error("searchCatalogNext() Error:"+error)
+    throw Error("searchCatalogNext() "+error)
   }
   return data
 }
 
+export async function tagsByRepo(owner :string, language :string, resource :string) :Promise<string[]> {
+  const _data :any = await searchCatalogNext(owner,language,resource,'prod',true)
+  const keys = Object.keys(_data.data)
+  let tags :string[] = []
+  for (const key in keys) {
+    const tag = _data.data[key].release.tag_name
+    tags.push(tag)
+  }
+  return tags
+}

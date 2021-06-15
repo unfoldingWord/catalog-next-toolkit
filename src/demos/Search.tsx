@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ReactJson from 'react-json-view'; 
 
-import {searchCatalogNext} from '../core/dcsApis'
+import {tagsByRepo} from '../core/dcsApis'
 
 type SearchProps = {
-  server?: string,
   owner?: string,
   language?: string,
   resource?:  string,
@@ -18,15 +17,28 @@ export const Search = ({ owner, language, resource, stage, includeHistory,
     const [value, setValue] = useState(<CircularProgress />);
     useEffect( () => {
       const fetchData = async () => {
-        let value;
+        let tags :string[]
         try {
-          value = await searchCatalogNext(owner,language,resource,stage,includeHistory)
+          tags = await tagsByRepo(owner,language,resource)
+          setValue(
+            <ul>
+              {
+                tags.map((tag) => {
+                  return (
+                    <li key={tag}>
+                      <pre>{tag}</pre>
+                    </li>
+                  )
+                })
+              }
+            </ul>
+          )
         } catch (err) {
-          value = JSON.parse(`{"Error": "${err}"}`)
+          const _err = JSON.parse(`{"Error": "${err}"}`)
+          setValue(
+            <ReactJson src={_err} />
+          )
         }
-        setValue(
-          <ReactJson src={value} />
-        )
       };
       fetchData();
     },[]); // eslint-disable-line react-hooks/exhaustive-deps
